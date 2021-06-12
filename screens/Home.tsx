@@ -1,13 +1,12 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
 import {
-  Button,
   Image,
+  RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
-  Touchable,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { fetchAllPosts } from '../services/posts';
@@ -36,11 +35,15 @@ const HomeScreen = (props: Props) => {
 
   const [posts, setPosts] = useState<Post[]>([]);
 
+  const [loading, setLoading] = useState(false);
+
   const fetchData = async () => {
+    setLoading(true);
     const response = await fetchAllPosts();
     if (response.data) {
       setPosts(response.data);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -48,7 +51,12 @@ const HomeScreen = (props: Props) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={loading} onRefresh={fetchData} />
+      }
+      style={styles.container}
+    >
       {posts.map((value, index) => (
         <TouchableOpacity
           onPress={() => {
@@ -76,7 +84,7 @@ const HomeScreen = (props: Props) => {
           <Text style={styles.body}>{value.title}</Text>
         </TouchableOpacity>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 

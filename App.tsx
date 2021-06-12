@@ -9,29 +9,51 @@ import Profile from './screens/Profile';
 import { Ionicons } from '@expo/vector-icons';
 import Friends from './screens/Friends';
 import FeedDetailScreen from './screens/FeedDetail';
+import LoginScreen from './screens/Login';
+import SignupScreen from './screens/Signup';
 
 const FeedsStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const FriendStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const FeedsStackScreens = () => (
-  <FeedsStack.Navigator
-    screenOptions={{ headerBackTitleVisible: false }}
-    initialRouteName='Home'
-  >
-    <FeedsStack.Screen
-      name='Home'
-      component={HomeScreen}
-      options={{ title: 'Twitter' }}
-    />
-    <FeedsStack.Screen
-      name='FeedDetail'
-      component={FeedDetailScreen}
-      options={{ title: 'Details' }}
-    />
-  </FeedsStack.Navigator>
-);
+const FeedsStackScreens = () => {
+  const isSignedIn = false;
+  return (
+    <FeedsStack.Navigator
+      screenOptions={{ headerBackTitleVisible: false }}
+      initialRouteName={isSignedIn ? 'Home' : 'Login'}
+    >
+      {isSignedIn ? (
+        <>
+          <FeedsStack.Screen
+            name='Home'
+            component={HomeScreen}
+            options={{ title: 'Twitter' }}
+          />
+          <FeedsStack.Screen
+            name='FeedDetail'
+            component={FeedDetailScreen}
+            options={{ title: 'Details' }}
+          />
+        </>
+      ) : (
+        <>
+          <FeedsStack.Screen
+            name='Login'
+            component={LoginScreen}
+            options={{ headerTransparent: true, headerTitle: '' }}
+          />
+          <FeedsStack.Screen
+            name='Signup'
+            component={SignupScreen}
+            options={{ headerTransparent: true, headerTitle: '' }}
+          />
+        </>
+      )}
+    </FeedsStack.Navigator>
+  );
+};
 
 const ProfileStackScreens = () => (
   <ProfileStack.Navigator>
@@ -74,13 +96,20 @@ export default function App() {
             }
             return <Ionicons name={iconName} size={size} color={color} />;
           },
+          tabBarVisible: route.name !== 'Login',
         })}
         tabBarOptions={{
           activeTintColor: 'green',
           inactiveTintColor: 'gray',
         }}
       >
-        <Tab.Screen name='Feeds' component={FeedsStackScreens} />
+        <Tab.Screen
+          options={(navigation) => ({
+            tabBarVisible: navigation.route.key !== 'Login',
+          })}
+          name='Feeds'
+          component={FeedsStackScreens}
+        />
         <Tab.Screen name='Profile' component={ProfileStackScreens} />
         <Tab.Screen name='Friends' component={FriendStackScreens} />
       </Tab.Navigator>

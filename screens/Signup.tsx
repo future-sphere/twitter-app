@@ -4,14 +4,14 @@ import { Text, View, StyleSheet, TextInput, Pressable } from 'react-native';
 
 interface Props {}
 
-const LoginScreen = (props: Props) => {
+const SignupScreen = (props: Props) => {
   const navigation = useNavigation();
   const handleSubmit = () => {
-    console.log('Logging in');
+    console.log('Signing up');
   };
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Twitter Login</Text>
+      <Text style={styles.header}>Twitter Signup</Text>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Username:</Text>
         <TextInput style={styles.input} placeholder='Enter your username' />
@@ -21,14 +21,14 @@ const LoginScreen = (props: Props) => {
         <TextInput style={styles.input} placeholder='Enter your password' />
       </View>
       <Pressable
-        onPress={() => navigation.navigate('Signup')}
+        onPress={() => navigation.navigate('Login')}
         style={styles.link}
       >
-        <Text>Don't have an account?</Text>
+        <Text>Already have an account?</Text>
       </Pressable>
       <View style={styles.buttonContainer}>
         <Pressable style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>Sign up</Text>
         </Pressable>
       </View>
     </View>
@@ -89,4 +89,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default SignupScreen;
