@@ -1,7 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  getFocusedRouteNameFromRoute,
+  NavigationContainer,
+} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './screens/Home';
@@ -75,6 +78,8 @@ const FriendStackScreens = () => (
   </FriendStack.Navigator>
 );
 
+const hiddenTabRoutes = ['Login', 'Signup'];
+
 export default function App() {
   return (
     <NavigationContainer>
@@ -96,7 +101,6 @@ export default function App() {
             }
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarVisible: route.name !== 'Login',
         })}
         tabBarOptions={{
           activeTintColor: 'green',
@@ -104,8 +108,17 @@ export default function App() {
         }}
       >
         <Tab.Screen
-          options={(navigation) => ({
-            tabBarVisible: navigation.route.key !== 'Login',
+          options={({ route }) => ({
+            tabBarVisible: ((route) => {
+              if (
+                hiddenTabRoutes.includes(
+                  getFocusedRouteNameFromRoute(route) ?? ''
+                )
+              ) {
+                return false;
+              }
+              return true;
+            })(route),
           })}
           name='Feeds'
           component={FeedsStackScreens}
