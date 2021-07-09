@@ -14,6 +14,10 @@ import Friends from './screens/Friends';
 import FeedDetailScreen from './screens/FeedDetail';
 import LoginScreen from './screens/Login';
 import SignupScreen from './screens/Signup';
+import { apiUrl } from './services';
+import axios from 'axios';
+
+axios.defaults.baseURL = apiUrl;
 
 const FeedsStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
@@ -21,7 +25,7 @@ const FriendStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const FeedsStackScreens = () => {
-  const isSignedIn = false;
+  const isSignedIn = true;
   return (
     <FeedsStack.Navigator
       screenOptions={{ headerBackTitleVisible: false }}

@@ -1,24 +1,75 @@
 import { useNavigation } from '@react-navigation/core';
+import { AxiosError } from 'axios';
 import React from 'react';
-import { Text, View, StyleSheet, TextInput, Pressable } from 'react-native';
+import { useState } from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Alert,
+} from 'react-native';
+import { registerUser } from '../services/users';
 
 interface Props {}
 
 const SignupScreen = (props: Props) => {
   const navigation = useNavigation();
   const handleSubmit = () => {
-    console.log('Signing up');
+    if (form.username && form.password) {
+      const username = form.username.toLowerCase();
+      registerUser({ username, password: form.password })
+        .then((response) => {
+          navigation.navigate('Login');
+        })
+        .catch((error: AxiosError) => {
+          console.log(error.response?.data);
+          Alert.alert(
+            'There was an error during register:',
+            error.response?.data
+          );
+        });
+    } else {
+      Alert.alert('Please enter both username and password before continue');
+    }
+  };
+  const [form, setForm] = useState<{ username?: string; password?: string }>(
+    {}
+  );
+  const handleInputChange = (key: string, value: string) => {
+    const nextForm: { [key: string]: string } = { ...form };
+    nextForm[key] = value;
+    setForm(nextForm);
   };
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Twitter Signup</Text>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Username:</Text>
-        <TextInput style={styles.input} placeholder='Enter your username' />
+        <TextInput
+          onTextInput={(e) => {
+            handleInputChange(
+              'username',
+              e.nativeEvent.previousText + e.nativeEvent.text
+            );
+          }}
+          style={styles.input}
+          placeholder='Enter your username'
+        />
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Password:</Text>
-        <TextInput style={styles.input} placeholder='Enter your password' />
+        <TextInput
+          onTextInput={(e) => {
+            handleInputChange(
+              'password',
+              e.nativeEvent.previousText + e.nativeEvent.text
+            );
+          }}
+          style={styles.input}
+          placeholder='Enter your password'
+        />
       </View>
       <Pressable
         onPress={() => navigation.navigate('Login')}
