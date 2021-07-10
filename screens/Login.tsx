@@ -3,7 +3,10 @@ import { AxiosError } from 'axios';
 import React, { useState } from 'react';
 import { Alert } from 'react-native';
 import { Text, View, StyleSheet, TextInput, Pressable } from 'react-native';
-import { loginUser } from '../services/users';
+import { getUserByToken, loginUser } from '../services/users';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { token, user } from '../state';
+import { useEffect } from 'react';
 
 interface Props {}
 
@@ -14,15 +17,14 @@ interface Props {}
 
 const LoginScreen = (props: Props) => {
   const navigation = useNavigation();
+  const tokenState = useState(token);
+
   const handleSubmit = () => {
     console.log('Logging in', form);
     if (form.password && form.username) {
       const username = form.username.toLowerCase();
       loginUser({ username, password: form.password })
-        .then((response) => {
-          Alert.alert('You have logged in', response.data);
-          // navigation.navigate('Home');
-        })
+        .then((response) => loginCallback(response.data))
         .catch((error: AxiosError) => {
           Alert.alert(
             'There was an error during register:',
@@ -33,6 +35,15 @@ const LoginScreen = (props: Props) => {
       Alert.alert('Please enter both username and password before continue');
     }
   };
+
+  const loginCallback = async (data: string) => {
+    await AsyncStorage.setItem('token', data);
+    token.set(data);
+    getUserByToken({ token: data }).then((response) => {
+      user.set(response.data);
+    });
+  };
+
   const [form, setForm] = useState<{ username?: string; password?: string }>(
     {}
   );
@@ -41,6 +52,15 @@ const LoginScreen = (props: Props) => {
     nextForm[key] = value;
     setForm(nextForm);
   };
+
+  useEffect(() => {
+    AsyncStorage.getItem('token').then(async (token) => {
+      if (token) {
+        loginCallback(token);
+      }
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Twitter Login</Text>

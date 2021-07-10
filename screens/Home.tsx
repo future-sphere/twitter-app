@@ -12,6 +12,7 @@ import {
 import { fetchAllPosts } from '../services/posts';
 import globalStyles from '../styles/global';
 import moment from 'moment';
+import { user } from '../state';
 
 interface Props {}
 
@@ -36,6 +37,9 @@ const HomeScreen = (props: Props) => {
   const [posts, setPosts] = useState<Post[]>([]);
 
   const [loading, setLoading] = useState(false);
+  const userState = useState(user);
+
+  console.log(user.value);
 
   const fetchData = async () => {
     setLoading(true);
