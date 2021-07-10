@@ -16,48 +16,33 @@ import LoginScreen from './screens/Login';
 import SignupScreen from './screens/Signup';
 import { apiUrl } from './services';
 import axios from 'axios';
+import { useState } from '@hookstate/core';
+import { token } from './state';
 
 axios.defaults.baseURL = apiUrl;
 
 const FeedsStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const FriendStack = createStackNavigator();
+const AuthStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const FeedsStackScreens = () => {
-  const isSignedIn = true;
   return (
     <FeedsStack.Navigator
       screenOptions={{ headerBackTitleVisible: false }}
-      initialRouteName={isSignedIn ? 'Home' : 'Login'}
+      initialRouteName={'Home'}
     >
-      {isSignedIn ? (
-        <>
-          <FeedsStack.Screen
-            name='Home'
-            component={HomeScreen}
-            options={{ title: 'Twitter' }}
-          />
-          <FeedsStack.Screen
-            name='FeedDetail'
-            component={FeedDetailScreen}
-            options={{ title: 'Details' }}
-          />
-        </>
-      ) : (
-        <>
-          <FeedsStack.Screen
-            name='Login'
-            component={LoginScreen}
-            options={{ headerTransparent: true, headerTitle: '' }}
-          />
-          <FeedsStack.Screen
-            name='Signup'
-            component={SignupScreen}
-            options={{ headerTransparent: true, headerTitle: '' }}
-          />
-        </>
-      )}
+      <FeedsStack.Screen
+        name='Home'
+        component={HomeScreen}
+        options={{ title: 'Twitter' }}
+      />
+      <FeedsStack.Screen
+        name='FeedDetail'
+        component={FeedDetailScreen}
+        options={{ title: 'Details' }}
+      />
     </FeedsStack.Navigator>
   );
 };
@@ -85,51 +70,74 @@ const FriendStackScreens = () => (
 const hiddenTabRoutes = ['Login', 'Signup'];
 
 export default function App() {
+  const tokenState = useState(token);
+  const isSignedIn = tokenState.value;
+
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName = 'ios=home-outline';
-            switch (route.name) {
-              case 'Feeds':
-                iconName = focused ? 'home' : 'home-outline';
-                break;
-              case 'Profile':
-                iconName = focused ? 'person-circle' : 'person-circle-outline';
-                break;
-              case 'Friends':
-                iconName = focused ? 'people' : 'people-outline';
-              default:
-                break;
-            }
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-        })}
-        tabBarOptions={{
-          activeTintColor: 'green',
-          inactiveTintColor: 'gray',
-        }}
-      >
-        <Tab.Screen
-          options={({ route }) => ({
-            tabBarVisible: ((route) => {
-              if (
-                hiddenTabRoutes.includes(
-                  getFocusedRouteNameFromRoute(route) ?? ''
-                )
-              ) {
-                return false;
+      {isSignedIn ? (
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName = 'ios=home-outline';
+              switch (route.name) {
+                case 'Feeds':
+                  iconName = focused ? 'home' : 'home-outline';
+                  break;
+                case 'Profile':
+                  iconName = focused
+                    ? 'person-circle'
+                    : 'person-circle-outline';
+                  break;
+                case 'Friends':
+                  iconName = focused ? 'people' : 'people-outline';
+                default:
+                  break;
               }
-              return true;
-            })(route),
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
           })}
-          name='Feeds'
-          component={FeedsStackScreens}
-        />
-        <Tab.Screen name='Profile' component={ProfileStackScreens} />
-        <Tab.Screen name='Friends' component={FriendStackScreens} />
-      </Tab.Navigator>
+          tabBarOptions={{
+            activeTintColor: 'green',
+            inactiveTintColor: 'gray',
+          }}
+        >
+          <Tab.Screen
+            options={({ route }) => ({
+              tabBarVisible: ((route) => {
+                if (
+                  hiddenTabRoutes.includes(
+                    getFocusedRouteNameFromRoute(route) ?? ''
+                  )
+                ) {
+                  return false;
+                }
+                return true;
+              })(route),
+            })}
+            name='Feeds'
+            component={FeedsStackScreens}
+          />
+          <Tab.Screen name='Profile' component={ProfileStackScreens} />
+          <Tab.Screen name='Friends' component={FriendStackScreens} />
+        </Tab.Navigator>
+      ) : (
+        <AuthStack.Navigator
+          screenOptions={{ headerBackTitleVisible: false }}
+          initialRouteName={'Login'}
+        >
+          <AuthStack.Screen
+            name='Login'
+            component={LoginScreen}
+            options={{ headerTransparent: true, headerTitle: '' }}
+          />
+          <AuthStack.Screen
+            name='Signup'
+            component={SignupScreen}
+            options={{ headerTransparent: true, headerTitle: '' }}
+          />
+        </AuthStack.Navigator>
+      )}
     </NavigationContainer>
   );
 }

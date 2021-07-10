@@ -3,7 +3,10 @@ import { AxiosError } from 'axios';
 import React, { useState } from 'react';
 import { Alert } from 'react-native';
 import { Text, View, StyleSheet, TextInput, Pressable } from 'react-native';
-import { loginUser } from '../services/users';
+import { getUserByToken, loginUser } from '../services/users';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { token, user } from '../state';
+import { useEffect } from 'react';
 
 interface Props {}
 
@@ -19,10 +22,7 @@ const LoginScreen = (props: Props) => {
     if (form.password && form.username) {
       const username = form.username.toLowerCase();
       loginUser({ username, password: form.password })
-        .then((response) => {
-          Alert.alert('You have logged in', response.data);
-          // navigation.navigate('Home');
-        })
+        .then((response) => afterLogin(response.data))
         .catch((error: AxiosError) => {
           Alert.alert(
             'There was an error during register:',
@@ -33,6 +33,23 @@ const LoginScreen = (props: Props) => {
       Alert.alert('Please enter both username and password before continue');
     }
   };
+
+  // data is actually just token
+  const afterLogin = async (data: string) => {
+    await AsyncStorage.setItem('token', data);
+    const response = await getUserByToken(data);
+    user.set(response.data);
+    token.set(data);
+  };
+
+  useEffect(() => {
+    AsyncStorage.getItem('token').then((response) => {
+      if (response) {
+        afterLogin(response);
+      }
+    });
+  }, []);
+
   const [form, setForm] = useState<{ username?: string; password?: string }>(
     {}
   );

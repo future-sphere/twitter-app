@@ -19,3 +19,7 @@ export const loginUser = ({
 }): Promise<AxiosResponse> => {
   return axios.post('/auth/login', { username, password });
 };
+
+export const getUserByToken = (token: string): Promise<AxiosResponse> => {
+  return axios.post('/user/token', { token });
+};
