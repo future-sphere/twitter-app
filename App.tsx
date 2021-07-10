@@ -16,6 +16,10 @@ import LoginScreen from './screens/Login';
 import SignupScreen from './screens/Signup';
 import { apiUrl } from './services';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from 'react';
+import { useState } from '@hookstate/core';
+import { token } from './state';
 
 axios.defaults.baseURL = apiUrl;
 
@@ -25,7 +29,9 @@ const FriendStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const FeedsStackScreens = () => {
-  const isSignedIn = true;
+  const tokenState = useState(token);
+  const isSignedIn = tokenState.value;
+  console.log(tokenState.value);
   return (
     <FeedsStack.Navigator
       screenOptions={{ headerBackTitleVisible: false }}
@@ -115,13 +121,12 @@ export default function App() {
           options={({ route }) => ({
             tabBarVisible: ((route) => {
               if (
-                hiddenTabRoutes.includes(
+                !hiddenTabRoutes.includes(
                   getFocusedRouteNameFromRoute(route) ?? ''
                 )
               ) {
-                return false;
+                return true;
               }
-              return true;
             })(route),
           })}
           name='Feeds'
