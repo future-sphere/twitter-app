@@ -12,6 +12,9 @@ import {
 import { fetchAllPosts } from '../services/posts';
 import globalStyles from '../styles/global';
 import moment from 'moment';
+import { useHookstate } from '@hookstate/core';
+import { user } from '../state';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Props {}
 
@@ -36,6 +39,7 @@ const HomeScreen = (props: Props) => {
   const [posts, setPosts] = useState<Post[]>([]);
 
   const [loading, setLoading] = useState(false);
+  const userState = useHookstate(user);
 
   const fetchData = async () => {
     setLoading(true);
@@ -73,7 +77,16 @@ const HomeScreen = (props: Props) => {
                 style={styles.avatar}
                 source={{ uri: value.author.avatar }}
               />
-              <Text style={styles.author}>{value.author.username}</Text>
+              <Text style={styles.author}>{value.author.username} </Text>
+              <Text>
+                {value.author.username === userState.value?.username && (
+                  <Ionicons
+                    name='flame-outline'
+                    size={15}
+                    color='blue`'
+                  ></Ionicons>
+                )}
+              </Text>
             </View>
             <View style={styles.timestampContainer}>
               <Text style={styles.timestamp}>
