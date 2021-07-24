@@ -23,7 +23,7 @@ export const handleUnLikePost = (userId: string, postId: string) => {
 export const handleLikeComment = (
   userId: string,
   postId: string,
-  commentId: string
+  commentId: string,
 ) => {
   return axios.put(`/posts/${postId}/comment/like`, {
     commentId,
@@ -31,8 +31,25 @@ export const handleLikeComment = (
   });
 };
 
+export const postComment = (userId: string, text: string, postId: string) => {
+  return axios.post('/posts/comment', {
+    userId,
+    text,
+    postId,
+  });
+};
+
+export const createPost = (author: string, title: string) => {
+  return axios.post('/posts', {
+    author,
+    title,
+  });
+};
+
 const PostService = {
   handleLikeComment,
+  postComment,
+  createPost,
 };
 
 export default PostService;

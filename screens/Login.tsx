@@ -24,10 +24,7 @@ const LoginScreen = (props: Props) => {
       loginUser({ username, password: form.password })
         .then((response) => afterLogin(response.data))
         .catch((error: AxiosError) => {
-          Alert.alert(
-            'There was an error during register:',
-            error.response?.data
-          );
+          Alert.alert('There was an error during login:', error.response?.data);
         });
     } else {
       Alert.alert('Please enter both username and password before continue');
@@ -51,7 +48,7 @@ const LoginScreen = (props: Props) => {
   }, []);
 
   const [form, setForm] = useState<{ username?: string; password?: string }>(
-    {}
+    {},
   );
   const handleInputChange = (key: string, value: string) => {
     const nextForm: { [key: string]: string } = { ...form };
@@ -67,7 +64,7 @@ const LoginScreen = (props: Props) => {
           onTextInput={(e) => {
             handleInputChange(
               'username',
-              e.nativeEvent.previousText + e.nativeEvent.text
+              e.nativeEvent.previousText + e.nativeEvent.text,
             );
           }}
           style={styles.input}
@@ -80,7 +77,7 @@ const LoginScreen = (props: Props) => {
           onTextInput={(e) => {
             handleInputChange(
               'password',
-              e.nativeEvent.previousText + e.nativeEvent.text
+              e.nativeEvent.previousText + e.nativeEvent.text,
             );
           }}
           style={styles.input}

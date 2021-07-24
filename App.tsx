@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import {
   getFocusedRouteNameFromRoute,
   NavigationContainer,
@@ -18,6 +18,7 @@ import { apiUrl } from './services';
 import axios from 'axios';
 import { useState } from '@hookstate/core';
 import { token } from './state';
+import NewPost from './screens/NewPost';
 
 axios.defaults.baseURL = apiUrl;
 
@@ -30,7 +31,19 @@ const Tab = createBottomTabNavigator();
 const FeedsStackScreens = () => {
   return (
     <FeedsStack.Navigator
-      screenOptions={{ headerBackTitleVisible: false }}
+      screenOptions={({ navigation }) => ({
+        headerBackTitleVisible: false,
+        headerRight: () => {
+          return (
+            <Pressable onPress={() => navigation.navigate('NewPost')}>
+              <Ionicons name='create-outline' size={30} />
+            </Pressable>
+          );
+        },
+        headerRightContainerStyle: {
+          paddingRight: 10,
+        },
+      })}
       initialRouteName={'Home'}
     >
       <FeedsStack.Screen
@@ -42,6 +55,11 @@ const FeedsStackScreens = () => {
         name='FeedDetail'
         component={FeedDetailScreen}
         options={{ title: 'Details' }}
+      />
+      <FeedsStack.Screen
+        name='NewPost'
+        component={NewPost}
+        options={{ title: 'Create new post' }}
       />
     </FeedsStack.Navigator>
   );
@@ -107,7 +125,7 @@ export default function App() {
               tabBarVisible: ((route) => {
                 if (
                   hiddenTabRoutes.includes(
-                    getFocusedRouteNameFromRoute(route) ?? ''
+                    getFocusedRouteNameFromRoute(route) ?? '',
                   )
                 ) {
                   return false;

@@ -5,8 +5,10 @@ import {
   Button,
   Image,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import PostService, {
@@ -49,6 +51,7 @@ const FeedDetailScreen = (props: Props) => {
   const userState = useHookstate(user);
   const [hasLiked, setHasLiked] = useState(false);
   const [post, setPost] = useState<PostDetails | null>(null);
+  const [input, setInput] = useState('');
 
   const fetchData = async () => {
     const response = await fetchPostById(postId);
@@ -98,9 +101,9 @@ const FeedDetailScreen = (props: Props) => {
     if (userState.value) {
       try {
         const response = await PostService.handleLikeComment(
-          userState.value?._id,
+          userState.value._id,
           postId,
-          commentId
+          commentId,
         );
         setHasLiked(false);
         const nextPost = { ...post };
@@ -113,8 +116,6 @@ const FeedDetailScreen = (props: Props) => {
       } catch (error) {
         console.log(error);
       }
-    } else {
-      Alert.alert('You need to log in to unlike this post.');
     }
   };
 
@@ -122,8 +123,22 @@ const FeedDetailScreen = (props: Props) => {
     fetchData();
   }, [postId]);
 
+  const handlePostComment = async () => {
+    if (input && userState.value && post) {
+      PostService.postComment(userState.value?._id, input, post._id).then(
+        (response) => {
+          const newPost = response.data;
+          setPost(newPost);
+          setInput('');
+        },
+      );
+    } else {
+      Alert.alert('You cannot post an empty comment!');
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={[globalStyles.contentContainer]}>
         <View style={styles.header}>
           <View style={styles.commentHeader}>
@@ -164,61 +179,111 @@ const FeedDetailScreen = (props: Props) => {
       </View>
       <View style={[globalStyles.contentContainer]}>
         <Text>Comments</Text>
-        {userState.value
-          ? post?.comments.map((v, i) => (
-              <View style={styles.commentContainer} key={i}>
-                <View style={styles.commentHeader}>
-                  <View style={styles.commentAuthor}>
-                    <Image
-                      style={[styles.avatar, { marginRight: 10 }]}
-                      source={{ uri: v.authorAvatar }}
-                    />
-                    <Text style={{ fontWeight: '600' }}>{v.authorName}</Text>
-                  </View>
-                  <Text style={styles.timestamp}>
-                    Posted on {moment(v.createdAt).fromNow()}
-                  </Text>
-                </View>
-                <Text key={i}>{v.text}</Text>
-                <Pressable
-                  onPress={() => handleLikeComment(v.commentId, i)}
-                  style={styles.likeContainer}
-                >
-                  <Ionicons
-                    name={
-                      v.likedBy.includes(userState.value._id)
-                        ? 'heart-sharp'
-                        : 'heart-outline'
-                    }
-                    color={
-                      v.likedBy.includes(userState.value._id) ? 'red' : 'black'
-                    }
-                    size={15}
-                  />
-                  <Text
-                    style={[
-                      styles.likeText,
-                      {
-                        color: v.likedBy.includes(userState.value._id)
-                          ? 'red'
-                          : 'black',
-                      },
-                    ]}
-                  >
-                    Like
-                  </Text>
-                </Pressable>
+        {post?.comments.map((v, i) => (
+          <View
+            style={[
+              styles.commentContainer,
+              {
+                borderBottomWidth: i === post.comments.length - 1 ? 0 : 1,
+              },
+            ]}
+            key={i}
+          >
+            <View style={styles.commentHeader}>
+              <View style={styles.commentAuthor}>
+                <Image
+                  style={[styles.avatar, { marginRight: 10 }]}
+                  source={{ uri: v.authorAvatar }}
+                />
+                <Text style={{ fontWeight: '600' }}>{v.authorName}</Text>
               </View>
-            ))
-          : null}
+              <Text style={styles.timestamp}>
+                Posted on {moment(v.createdAt).fromNow()}
+              </Text>
+            </View>
+            <Text key={i}>{v.text}</Text>
+            <Pressable
+              onPress={() => handleLikeComment(v.commentId, i)}
+              style={styles.likeContainer}
+            >
+              <Ionicons
+                name={
+                  userState.value && v.likedBy.includes(userState.value._id)
+                    ? 'heart-sharp'
+                    : 'heart-outline'
+                }
+                color={
+                  userState.value && v.likedBy.includes(userState.value._id)
+                    ? 'red'
+                    : 'black'
+                }
+                size={15}
+              />
+              <Text
+                style={[
+                  styles.likeText,
+                  {
+                    color:
+                      userState.value && v.likedBy.includes(userState.value._id)
+                        ? 'red'
+                        : 'black',
+                  },
+                ]}
+              >
+                Like
+              </Text>
+            </Pressable>
+          </View>
+        ))}
       </View>
-    </View>
+      <View style={styles.inputContainer}>
+        <TextInput
+          onChangeText={setInput}
+          value={input}
+          style={styles.input}
+          placeholder='Input your comment here'
+        />
+        <Pressable style={styles.button} onPress={handlePostComment}>
+          <Text style={styles.buttonText}>Post Comment</Text>
+        </Pressable>
+      </View>
+    </ScrollView>
   );
 };
 
 export default FeedDetailScreen;
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 10,
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  input: {
+    width: '70%',
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#999',
+    borderStyle: 'solid',
+    backgroundColor: 'white',
+    borderTopLeftRadius: 4,
+    borderBottomLeftRadius: 4,
+    borderRightWidth: 0,
+  },
+  button: {
+    width: '30%',
+    padding: 8,
+    backgroundColor: 'green',
+    textAlign: 'center',
+    borderTopRightRadius: 4,
+    borderBottomRightRadius: 4,
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
   container: {
     flex: 1,
     paddingTop: 5,
