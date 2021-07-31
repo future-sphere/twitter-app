@@ -14,6 +14,10 @@ export const handleLikePost = (userId: string, postId: string) => {
   });
 };
 
+export const handleDeletePost = (postId: string) => {
+  return axios.delete(`/posts/${postId}`);
+};
+
 export const handleUnLikePost = (userId: string, postId: string) => {
   return axios.put(`/posts/${postId}/unlike`, {
     userId,
@@ -29,6 +33,10 @@ export const handleLikeComment = (
     commentId,
     userId,
   });
+};
+
+export const handleDeleteComment = (commentId: string, postId: string) => {
+  return axios.delete(`/posts/${postId}/comment`, { data: { commentId } });
 };
 
 export const postComment = (userId: string, text: string, postId: string) => {
@@ -50,6 +58,8 @@ const PostService = {
   handleLikeComment,
   postComment,
   createPost,
+  handleDeletePost,
+  handleDeleteComment,
 };
 
 export default PostService;

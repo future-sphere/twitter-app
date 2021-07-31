@@ -15,6 +15,7 @@ import moment from 'moment';
 import { useHookstate } from '@hookstate/core';
 import { user } from '../state';
 import { Ionicons } from '@expo/vector-icons';
+import { defaultAvatar } from './Profile';
 
 interface Props {}
 
@@ -75,7 +76,7 @@ const HomeScreen = (props: Props) => {
             <View style={styles.authorContainer}>
               <Image
                 style={styles.avatar}
-                source={{ uri: value.author.avatar }}
+                source={{ uri: value.author.avatar || defaultAvatar }}
               />
               <Text style={styles.author}>{value.author.username} </Text>
               <Text>
@@ -83,7 +84,7 @@ const HomeScreen = (props: Props) => {
                   <Ionicons
                     name='flame-outline'
                     size={15}
-                    color='blue`'
+                    color='#ff00ff'
                   ></Ionicons>
                 )}
               </Text>

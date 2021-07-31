@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Share } from 'react-native';
 import {
   getFocusedRouteNameFromRoute,
   NavigationContainer,
@@ -33,13 +33,6 @@ const FeedsStackScreens = () => {
     <FeedsStack.Navigator
       screenOptions={({ navigation }) => ({
         headerBackTitleVisible: false,
-        headerRight: () => {
-          return (
-            <Pressable onPress={() => navigation.navigate('NewPost')}>
-              <Ionicons name='create-outline' size={30} />
-            </Pressable>
-          );
-        },
         headerRightContainerStyle: {
           paddingRight: 10,
         },
@@ -49,12 +42,32 @@ const FeedsStackScreens = () => {
       <FeedsStack.Screen
         name='Home'
         component={HomeScreen}
-        options={{ title: 'Twitter' }}
+        options={({ navigation }) => ({
+          title: 'Twitter',
+          headerRight: () => (
+            <Pressable onPress={() => navigation.navigate('NewPost')}>
+              <Ionicons name='create-outline' size={30} />
+            </Pressable>
+          ),
+        })}
       />
       <FeedsStack.Screen
         name='FeedDetail'
         component={FeedDetailScreen}
-        options={{ title: 'Details' }}
+        options={{
+          title: 'Details',
+          headerRight: () => (
+            <Pressable
+              onPress={() =>
+                Share.share({
+                  message: 'This is being shared to social media',
+                })
+              }
+            >
+              <Ionicons name='share-social' color='green' size={25} />
+            </Pressable>
+          ),
+        }}
       />
       <FeedsStack.Screen
         name='NewPost'

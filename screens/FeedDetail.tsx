@@ -22,6 +22,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useHookstate } from '@hookstate/core';
 import { user } from '../state';
 import moment from 'moment';
+import { useNavigation } from '@react-navigation/native';
+import { defaultAvatar } from './Profile';
 
 type ParamsList = { FeedDetail: { postId: string } };
 
@@ -137,12 +139,66 @@ const FeedDetailScreen = (props: Props) => {
     }
   };
 
+  const navigation = useNavigation();
+
+  const handleDelete = async () => {
+    const confirm = Alert.alert(
+      'Delete Post',
+      'Are you sure you want to delete?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const response = await PostService.handleDeletePost(postId);
+            if (response.data) {
+              navigation.navigate('Home');
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    const confirm = Alert.alert(
+      'Delete Comment',
+      'Are you sure you want to delete?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const response = await PostService.handleDeleteComment(
+              commentId,
+              postId,
+            );
+            if (response.data) {
+              fetchData();
+            }
+          },
+        },
+      ],
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={[globalStyles.contentContainer]}>
         <View style={styles.header}>
           <View style={styles.commentHeader}>
-            <Image style={styles.avatar} source={{ uri: post?.authorAvatar }} />
+            <Image
+              style={styles.avatar}
+              source={{ uri: post?.authorAvatar || defaultAvatar }}
+            />
             <Text style={styles.authorName}>{post?.authorName}</Text>
           </View>
           <Text style={styles.timestamp}>
@@ -150,32 +206,40 @@ const FeedDetailScreen = (props: Props) => {
           </Text>
         </View>
         <Text>{post?.title}</Text>
-        <Pressable
-          onPress={() => {
-            if (hasLiked) {
-              handleUnlike();
-            } else {
-              handleLike();
-            }
-          }}
-          style={styles.likeContainer}
-        >
-          <Ionicons
-            name={hasLiked ? 'heart-sharp' : 'heart-outline'}
-            color={hasLiked ? 'red' : 'black'}
-            size={15}
-          />
-          <Text
-            style={[
-              styles.likeText,
-              {
-                color: hasLiked ? 'red' : 'black',
-              },
-            ]}
+        <View style={styles.actionContainer}>
+          <Pressable
+            onPress={() => {
+              if (hasLiked) {
+                handleUnlike();
+              } else {
+                handleLike();
+              }
+            }}
+            style={styles.likeContainer}
           >
-            Like
-          </Text>
-        </Pressable>
+            <Ionicons
+              name={hasLiked ? 'heart-sharp' : 'heart-outline'}
+              color={hasLiked ? 'red' : 'black'}
+              size={15}
+            />
+            <Text
+              style={[
+                styles.likeText,
+                {
+                  color: hasLiked ? 'red' : 'black',
+                },
+              ]}
+            >
+              Like
+            </Text>
+          </Pressable>
+          {post?.authorName === user.value?.username ? (
+            <Pressable onPress={handleDelete} style={styles.deleteButton}>
+              <Ionicons style={styles.deleteIcon} size={15} name='trash' />
+              <Text style={styles.likeText}>Delete</Text>
+            </Pressable>
+          ) : null}
+        </View>
       </View>
       <View style={[globalStyles.contentContainer]}>
         <Text>Comments</Text>
@@ -193,7 +257,7 @@ const FeedDetailScreen = (props: Props) => {
               <View style={styles.commentAuthor}>
                 <Image
                   style={[styles.avatar, { marginRight: 10 }]}
-                  source={{ uri: v.authorAvatar }}
+                  source={{ uri: v.authorAvatar || defaultAvatar }}
                 />
                 <Text style={{ fontWeight: '600' }}>{v.authorName}</Text>
               </View>
@@ -202,37 +266,49 @@ const FeedDetailScreen = (props: Props) => {
               </Text>
             </View>
             <Text key={i}>{v.text}</Text>
-            <Pressable
-              onPress={() => handleLikeComment(v.commentId, i)}
-              style={styles.likeContainer}
-            >
-              <Ionicons
-                name={
-                  userState.value && v.likedBy.includes(userState.value._id)
-                    ? 'heart-sharp'
-                    : 'heart-outline'
-                }
-                color={
-                  userState.value && v.likedBy.includes(userState.value._id)
-                    ? 'red'
-                    : 'black'
-                }
-                size={15}
-              />
-              <Text
-                style={[
-                  styles.likeText,
-                  {
-                    color:
-                      userState.value && v.likedBy.includes(userState.value._id)
-                        ? 'red'
-                        : 'black',
-                  },
-                ]}
+            <View style={styles.actionContainer}>
+              <Pressable
+                onPress={() => handleLikeComment(v.commentId, i)}
+                style={styles.likeContainer}
               >
-                Like
-              </Text>
-            </Pressable>
+                <Ionicons
+                  name={
+                    userState.value && v.likedBy.includes(userState.value._id)
+                      ? 'heart-sharp'
+                      : 'heart-outline'
+                  }
+                  color={
+                    userState.value && v.likedBy.includes(userState.value._id)
+                      ? 'red'
+                      : 'black'
+                  }
+                  size={15}
+                />
+                <Text
+                  style={[
+                    styles.likeText,
+                    {
+                      color:
+                        userState.value &&
+                        v.likedBy.includes(userState.value._id)
+                          ? 'red'
+                          : 'black',
+                    },
+                  ]}
+                >
+                  Like
+                </Text>
+              </Pressable>
+              {v.authorName === user.value?.username ? (
+                <Pressable
+                  onPress={() => handleDeleteComment(v.commentId)}
+                  style={styles.deleteButton}
+                >
+                  <Ionicons style={styles.deleteIcon} size={15} name='trash' />
+                  <Text style={styles.likeText}>Delete</Text>
+                </Pressable>
+              ) : null}
+            </View>
           </View>
         ))}
       </View>
@@ -254,6 +330,14 @@ const FeedDetailScreen = (props: Props) => {
 export default FeedDetailScreen;
 
 const styles = StyleSheet.create({
+  actionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  deleteButton: { flexDirection: 'row', alignItems: 'center' },
+  deleteIcon: { marginRight: 2 },
   inputContainer: {
     flexDirection: 'row',
     paddingHorizontal: 10,
@@ -314,7 +398,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   likeContainer: {
-    marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
   },
