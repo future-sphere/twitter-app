@@ -34,11 +34,9 @@ interface Props {
 interface PostDetails extends Post {
   authorName: string;
   authorAvatar: string;
-  likedBy: string[];
-  comments: Comment[];
 }
 
-interface Comment {
+export interface Comment {
   authorAvatar: string;
   authorName: string;
   text: string;
@@ -190,17 +188,31 @@ const FeedDetailScreen = (props: Props) => {
     );
   };
 
+  const redirectToUserProfile = () => {
+    if (post?.authorName) {
+      navigation.navigate('Profile', {
+        screen: 'Profile',
+        params: {
+          username: post.authorName,
+        },
+      });
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={[globalStyles.contentContainer]}>
         <View style={styles.header}>
-          <View style={styles.commentHeader}>
+          <Pressable
+            onPress={redirectToUserProfile}
+            style={styles.commentHeader}
+          >
             <Image
               style={styles.avatar}
               source={{ uri: post?.authorAvatar || defaultAvatar }}
             />
             <Text style={styles.authorName}>{post?.authorName}</Text>
-          </View>
+          </Pressable>
           <Text style={styles.timestamp}>
             {moment(post?.createdAt).fromNow()}
           </Text>

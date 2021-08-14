@@ -16,6 +16,7 @@ import { useHookstate } from '@hookstate/core';
 import { user } from '../state';
 import { Ionicons } from '@expo/vector-icons';
 import { defaultAvatar } from './Profile';
+import { Comment } from './FeedDetail';
 
 interface Props {}
 
@@ -32,6 +33,8 @@ export interface Post {
   author: User;
   _id: string;
   createdAt: string;
+  likedBy: string[];
+  comments: Comment[];
 }
 
 const HomeScreen = (props: Props) => {
@@ -96,6 +99,16 @@ const HomeScreen = (props: Props) => {
             </View>
           </View>
           <Text style={styles.body}>{value.title}</Text>
+          <View style={styles.reactionContainer}>
+            <Text style={styles.reaction}>
+              {value.likedBy.length}{' '}
+              {value.likedBy.length > 1 ? 'Likes' : 'Like'}
+            </Text>
+            <Text style={styles.reaction}>
+              {value.comments.length}{' '}
+              {value.comments.length > 1 ? 'Comments' : 'Comment'}
+            </Text>
+          </View>
         </TouchableOpacity>
       ))}
     </ScrollView>
@@ -106,6 +119,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 5,
+  },
+  reactionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  reaction: {
+    marginLeft: 10,
+    fontSize: 10,
+    fontWeight: '600',
   },
   timestampContainer: {},
   timestamp: {
