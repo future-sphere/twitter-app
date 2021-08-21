@@ -27,3 +27,9 @@ export const getUserByToken = (token: string): Promise<AxiosResponse> => {
 export const getUserByUsername = (username: string): Promise<AxiosResponse> => {
   return axios.get('/user/username', { params: { username } });
 };
+
+export const getUsersByIdList = (
+  userIdList: string[],
+): Promise<AxiosResponse> => {
+  return axios.get('/user/list', { params: { userIdList } });
+};

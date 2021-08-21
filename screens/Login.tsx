@@ -17,6 +17,7 @@ interface Props {}
 
 const LoginScreen = (props: Props) => {
   const navigation = useNavigation();
+
   const handleSubmit = () => {
     console.log('Logging in', form);
     if (form.password && form.username) {
@@ -35,6 +36,7 @@ const LoginScreen = (props: Props) => {
   const afterLogin = async (data: string) => {
     await AsyncStorage.setItem('token', data);
     const response = await getUserByToken(data);
+    await AsyncStorage.setItem('user', JSON.stringify(response.data));
     user.set(response.data);
     token.set(data);
   };

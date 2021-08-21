@@ -30,10 +30,14 @@ const Profile = (props: Props) => {
     userState.value?.friends.includes(profileUser?._id as string),
   );
 
-  const isOwnProfile = username === userState.value?.username;
+  console.log(userState?.value);
+
+  const isOwnProfile = username ? username === userState.value?.username : true;
 
   useEffect(() => {
-    fetchUserByProfile();
+    if (username) {
+      fetchUserByProfile();
+    }
   }, [username]);
 
   const fetchUserByProfile = () => {
@@ -63,7 +67,10 @@ const Profile = (props: Props) => {
           <View>
             <Text style={styles.tabText}>{profileUser?.username}</Text>
             <Text style={styles.tabText}>
-              {profileUser?.friends.length} Friends
+              {profileUser && profileUser.friends
+                ? profileUser.friends.length
+                : 0}{' '}
+              Friends
             </Text>
           </View>
         </View>

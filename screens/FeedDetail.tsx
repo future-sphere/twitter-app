@@ -188,13 +188,16 @@ const FeedDetailScreen = (props: Props) => {
     );
   };
 
-  const redirectToUserProfile = () => {
-    if (post?.authorName) {
+  const redirectToUserProfile = (userName?: string) => {
+    if (userName) {
+      // navigation.navigate('Profile', {
+      //   screen: 'Profile',
+      //   params: {
+      //     username: userName,
+      //   },
+      // });
       navigation.navigate('Profile', {
-        screen: 'Profile',
-        params: {
-          username: post.authorName,
-        },
+        username: userName,
       });
     }
   };
@@ -204,7 +207,7 @@ const FeedDetailScreen = (props: Props) => {
       <View style={[globalStyles.contentContainer]}>
         <View style={styles.header}>
           <Pressable
-            onPress={redirectToUserProfile}
+            onPress={() => redirectToUserProfile(post?.authorName)}
             style={styles.commentHeader}
           >
             <Image
@@ -266,13 +269,16 @@ const FeedDetailScreen = (props: Props) => {
             key={i}
           >
             <View style={styles.commentHeader}>
-              <View style={styles.commentAuthor}>
+              <Pressable
+                onPress={() => redirectToUserProfile(v.authorName)}
+                style={styles.commentAuthor}
+              >
                 <Image
                   style={[styles.avatar, { marginRight: 10 }]}
                   source={{ uri: v.authorAvatar || defaultAvatar }}
                 />
                 <Text style={{ fontWeight: '600' }}>{v.authorName}</Text>
-              </View>
+              </Pressable>
               <Text style={styles.timestamp}>
                 Posted on {moment(v.createdAt).fromNow()}
               </Text>

@@ -74,6 +74,11 @@ const FeedsStackScreens = () => {
         component={NewPost}
         options={{ title: 'Create new post' }}
       />
+      <FeedsStack.Screen
+        name='Profile'
+        component={Profile}
+        options={{ title: 'Profile' }}
+      />
     </FeedsStack.Navigator>
   );
 };

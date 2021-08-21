@@ -26,6 +26,8 @@ export interface User {
   username: string;
   avatar: string;
   gender: number;
+  _id: string;
+  friends: string[];
 }
 
 export interface Post {
