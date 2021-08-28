@@ -19,7 +19,6 @@ const LoginScreen = (props: Props) => {
   const navigation = useNavigation();
 
   const handleSubmit = () => {
-    console.log('Logging in', form);
     if (form.password && form.username) {
       const username = form.username.toLowerCase();
       loginUser({ username, password: form.password })

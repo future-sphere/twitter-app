@@ -54,12 +54,18 @@ export const createPost = (author: string, title: string) => {
   });
 };
 
+// create a service function to get post by author id
+export const getPostsByAuthor = (authorId: string) => {
+  return axios.get(`/posts/author/${authorId}`);
+};
+
 const PostService = {
   handleLikeComment,
   postComment,
   createPost,
   handleDeletePost,
   handleDeleteComment,
+  getPostsByAuthor,
 };
 
 export default PostService;

@@ -39,7 +39,6 @@ const Friends = (props: Props) => {
   useEffect(() => {
     AsyncStorage.getItem('user').then((user) => {
       if (user) {
-        console.log('i am here with user');
         const deserializedUser = JSON.parse(user);
         setUser(deserializedUser);
       }

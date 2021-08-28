@@ -19,6 +19,7 @@ import axios from 'axios';
 import { useState } from '@hookstate/core';
 import { token } from './state';
 import NewPost from './screens/NewPost';
+import EditProfileScreen from './screens/EditProfile';
 
 axios.defaults.baseURL = apiUrl;
 
@@ -89,6 +90,11 @@ const ProfileStackScreens = () => (
       name='Profile'
       component={Profile}
       options={{ title: 'Profile' }}
+    />
+    <ProfileStack.Screen
+      name='EditProfile'
+      component={EditProfileScreen}
+      options={{ title: 'Edit Profile Information' }}
     />
   </ProfileStack.Navigator>
 );

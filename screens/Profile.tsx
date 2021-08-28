@@ -10,6 +10,9 @@ import { addFriend } from '../services/friends';
 import { getUserByUsername } from '../services/users';
 import { token, user } from '../state';
 import { Ionicons } from '@expo/vector-icons';
+import PostService from '../services/posts';
+import { Post } from './Home';
+import FeedBlock from '../components/FeedBlock';
 
 type ParamsList = { Profile: { username: string } };
 
@@ -29,8 +32,7 @@ const Profile = (props: Props) => {
   const [addedFriend, setAddedFriend] = useState(
     userState.value?.friends.includes(profileUser?._id as string),
   );
-
-  console.log(userState?.value);
+  const [posts, setPosts] = useState<Post[] | null>(null);
 
   const isOwnProfile = username ? username === userState.value?.username : true;
 
@@ -40,9 +42,20 @@ const Profile = (props: Props) => {
     }
   }, [username]);
 
+  useEffect(() => {
+    if (isOwnProfile && userState.value?._id) {
+      PostService.getPostsByAuthor(userState.value._id).then((response) => {
+        setPosts(response.data);
+      });
+    }
+  }, [isOwnProfile]);
+
   const fetchUserByProfile = () => {
     getUserByUsername(username).then((response) => {
       setProfileUser(response.data);
+      PostService.getPostsByAuthor(response.data._id).then((postsResponse) => {
+        setPosts(postsResponse.data);
+      });
     });
   };
 
@@ -54,6 +67,16 @@ const Profile = (props: Props) => {
         setAddedFriend(true);
       }
     }
+  };
+
+  const handlePostNavigate = (id: string) => {
+    navigation.navigate('FeedDetail', {
+      postId: id,
+    });
+  };
+
+  const handleNavigateToEdit = () => {
+    navigation.navigate('EditProfile');
   };
 
   return (
@@ -80,6 +103,14 @@ const Profile = (props: Props) => {
               <Text style={styles.addFriendButtonText}>Add Friend</Text>
             </Pressable>
           ) : null}
+          {isOwnProfile ? (
+            <Pressable
+              onPress={handleNavigateToEdit}
+              style={styles.addFriendButton}
+            >
+              <Text style={styles.addFriendButtonText}>Edit Profile</Text>
+            </Pressable>
+          ) : null}
           {addedFriend ? (
             <View style={styles.friendStatus}>
               <Text>Friended</Text>
@@ -88,6 +119,16 @@ const Profile = (props: Props) => {
           ) : null}
         </View>
       </View>
+      {posts
+        ? posts.map((v, i) => (
+            <FeedBlock
+              data={v}
+              index={i}
+              key={i}
+              handlePostNavigate={handlePostNavigate}
+            />
+          ))
+        : null}
       {isOwnProfile ? (
         <Button
           title='Logout'

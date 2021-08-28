@@ -24,10 +24,9 @@ const SignupScreen = (props: Props) => {
           navigation.navigate('Login');
         })
         .catch((error: AxiosError) => {
-          console.log(error.response?.data);
           Alert.alert(
             'There was an error during register:',
-            error.response?.data
+            error.response?.data,
           );
         });
     } else {
@@ -35,7 +34,7 @@ const SignupScreen = (props: Props) => {
     }
   };
   const [form, setForm] = useState<{ username?: string; password?: string }>(
-    {}
+    {},
   );
   const handleInputChange = (key: string, value: string) => {
     const nextForm: { [key: string]: string } = { ...form };
@@ -51,7 +50,7 @@ const SignupScreen = (props: Props) => {
           onTextInput={(e) => {
             handleInputChange(
               'username',
-              e.nativeEvent.previousText + e.nativeEvent.text
+              e.nativeEvent.previousText + e.nativeEvent.text,
             );
           }}
           style={styles.input}
@@ -64,7 +63,7 @@ const SignupScreen = (props: Props) => {
           onTextInput={(e) => {
             handleInputChange(
               'password',
-              e.nativeEvent.previousText + e.nativeEvent.text
+              e.nativeEvent.previousText + e.nativeEvent.text,
             );
           }}
           style={styles.input}
