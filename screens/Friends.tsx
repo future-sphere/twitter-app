@@ -11,9 +11,10 @@ import {
 } from 'react-native';
 import { getUserByUsername, getUsersByIdList } from '../services/users';
 import { User } from './Home';
-import { defaultAvatar } from './Profile';
+
 import { Ionicons } from '@expo/vector-icons';
 import { removeFriend } from '../services/friends';
+import { defaultAvatar } from '../assets/constants';
 
 interface Props {}
 

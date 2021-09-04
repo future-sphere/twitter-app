@@ -14,7 +14,6 @@ import globalStyles from '../styles/global';
 import moment from 'moment';
 import { useHookstate } from '@hookstate/core';
 import { user } from '../state';
-import { defaultAvatar } from './Profile';
 import { Comment } from './FeedDetail';
 import FeedBlock from '../components/FeedBlock';
 

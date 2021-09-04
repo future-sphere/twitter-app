@@ -2,11 +2,12 @@ import { useHookstate } from '@hookstate/core';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Post } from '../../screens/Home';
-import { defaultAvatar } from '../../screens/Profile';
+
 import { user } from '../../state';
 import globalStyles from '../../styles/global';
 import { Ionicons } from '@expo/vector-icons';
 import moment from 'moment';
+import { defaultAvatar } from '../../assets/constants';
 
 interface Props {
   data: Post;

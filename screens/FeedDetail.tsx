@@ -23,7 +23,7 @@ import { useHookstate } from '@hookstate/core';
 import { user } from '../state';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
-import { defaultAvatar } from './Profile';
+import { defaultAvatar } from '../assets/constants';
 
 type ParamsList = { FeedDetail: { postId: string } };
 
