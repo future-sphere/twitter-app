@@ -5,6 +5,12 @@ interface User {
   avatar: string;
   friends: [string];
   _id: string;
+  password: string;
+  phone: string;
+  email: string;
+  gender: number;
+  bio: string;
+  dob: Date;
 }
 
 export const token = createState<string | null>(null);

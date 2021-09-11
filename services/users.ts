@@ -33,3 +33,23 @@ export const getUsersByIdList = (
 ): Promise<AxiosResponse> => {
   return axios.get('/user/list', { params: { userIdList } });
 };
+
+export const findByIdAndUpdate = (
+  userId: string,
+  username: string,
+  dob: string,
+  gender: number,
+  bio: string,
+  email: string,
+  phone: string,
+): Promise<AxiosResponse> => {
+  return axios.put('/user', {
+    userId,
+    username,
+    dob,
+    gender,
+    bio,
+    email,
+    phone,
+  });
+};
